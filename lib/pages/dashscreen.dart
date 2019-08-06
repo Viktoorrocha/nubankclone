@@ -11,6 +11,8 @@ class DashScren extends StatefulWidget {
 
 class _DashScreenState extends State<DashScren> {
   Color background = Color(0xff8e44ad);
+  double distance = 160.0;
+  double initial = 0.0;
   @override
   Widget build(BuildContext context) {
 
@@ -27,11 +29,13 @@ class _DashScreenState extends State<DashScren> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               header(),
-              //listBackgroundButton(),
+              listBackgroundButton(),
               bottomList(),
             ],
           ),
-        )
+        ),
+        moveCard(),
+
       ],
 
     );
@@ -171,12 +175,130 @@ class _DashScreenState extends State<DashScren> {
         scrollDirection: Axis.horizontal,
         children: <Widget>[
          SizedBox(width: 20,),
-          containerButton(),
+          containerButton( myText: "Indicar amigos", myIcon: Icons.group_add),
+          containerButton(myText: "Ajustar Limite", myIcon: Icons.tune),
+          containerButton(myText: "Bloquear Cartão", myIcon: Icons.lock_open),
+          containerButton(myText: "Cancelar Cartão", myIcon: Icons.credit_card),
         ],
       ),
     );
   }
 
 
-  c
+  Widget containerButton({String myText, IconData myIcon}){
+    return Container(
+      margin: EdgeInsets.only(bottom: 10, right: 10),
+      padding: EdgeInsets.all(5),
+      width: 120,
+      decoration: new BoxDecoration(
+        color: Color.fromRGBO(255, 255, 255, 0.2),
+        borderRadius: BorderRadius.all(Radius.circular(3)),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Icon(myIcon, color: Colors.white,),
+            Text(myText, style: TextStyle(color: Colors.white),)
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget moveCard(){
+    return Stack(
+      children: <Widget>[
+        Positioned(
+          top: distance,
+          right: 5,
+          child: GestureDetector(
+            onPanStart: (DragStartDetails details){
+              setState(() {
+                distance = details.globalPosition.dy - 20;
+              });
+            },
+            onPanUpdate: (DragUpdateDetails details){
+            setState(() {
+              if (details.globalPosition.dy > 500){
+                distance = 500.0;
+              } else if (details.globalPosition.dy < 100){
+                distance = 170.0;
+              } else {
+                distance = details.globalPosition.dy - initial;
+              }
+            });
+            },
+            child: contentCard(),
+          ),
+        )
+      ],
+    );
+  }
+
+
+  Widget contentCard(){
+    return Card(
+      elevation: 0.5,
+      color: Colors.white,
+      child: Container(
+        padding: EdgeInsets.only(
+          top: 20,
+          left: 20,
+          right: 20,
+        ),
+        height: MediaQuery.of(context).size.height * .5,
+        width: MediaQuery.of(context).size.width * .96,
+        child: Column(
+
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+
+          children: <Widget>[
+            Icon(Icons.monetization_on,
+            size: 40,
+            color: Colors.grey,
+            ),
+            Text("Conta", style: TextStyle(fontSize: 40),),
+
+            Text("Saia da poupança e faça seu dinheiro render de forma justa",
+            style: TextStyle(fontSize: 25,
+            color: Colors.grey,
+            ),),
+
+          Material(
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              padding: const EdgeInsets.only(top: 12, bottom: 12),
+              decoration: BoxDecoration(
+                border: Border(
+                  top: BorderSide(color: Color(0xff8e44ad)),
+                  bottom: BorderSide(color: Color(0xff8e44ad)),
+                  left: BorderSide(color: Color(0xff8e44ad)),
+                  right: BorderSide(color: Color(0xff8e44ad)),
+                )
+              ),
+
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Center(
+                    child: Text("CONHEÇA", style: TextStyle(
+                      fontSize: 20,
+                      color: Color(0xff8e44ad)
+                    ),),
+                  )
+                ],
+              ),
+            ),
+          )
+
+
+
+          ],
+        ),
+      ),
+    );
+  }
+
 }
